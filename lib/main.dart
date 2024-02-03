@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
@@ -92,7 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -105,7 +108,9 @@ class _MyHomePageState extends State<MyHomePage> {
         audioPath = p!;
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -122,7 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
         currentlyPlayingIndex = index;
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -138,9 +145,18 @@ class _MyHomePageState extends State<MyHomePage> {
       final file = m4aFiles[index];
       await file.delete();
 
+      setState(() {
+        currentlyPlayingIndex =
+            currentlyPlayingIndex != null && currentlyPlayingIndex! >= index
+                ? currentlyPlayingIndex! - 1
+                : currentlyPlayingIndex;
+      });
+
       loadM4AFiles();
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -152,7 +168,9 @@ class _MyHomePageState extends State<MyHomePage> {
         await audioPlayer.resume();
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -163,7 +181,9 @@ class _MyHomePageState extends State<MyHomePage> {
         playRecording(currentlyPlayingIndex! - 1);
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -178,7 +198,9 @@ class _MyHomePageState extends State<MyHomePage> {
         playRecording(0);
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -203,7 +225,9 @@ class _MyHomePageState extends State<MyHomePage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(File(audioPath).uri.pathSegments.last.toString() ?? ''),
+              Text(File(audioPath ?? '').uri.pathSegments.isNotEmpty
+                  ? File(audioPath).uri.pathSegments.last.toString()
+                  : 'No file selected'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -242,7 +266,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       return ListTile(
                         title: Text(file.uri.pathSegments.last),
                         onTap: () {
-                          print('File tapped: ${file.path}');
+                          if (kDebugMode) {
+                            print('File tapped: ${file.path}');
+                          }
                           audioPath = file.path;
 
                           playRecording(index);
